@@ -11,12 +11,13 @@
   "plugins": [
     {
       "name": "my-skills",
-      "description": "Personal productivity skills: Google Meet downloader and Notion reader",
+      "description": "Personal productivity skills: Google Meet downloader, Notion reader, and SUUMO property mapper",
       "source": "./",
       "strict": false,
       "skills": [
         "./skills/google-meet-downloader",
-        "./skills/notion-reader"
+        "./skills/notion-reader",
+        "./skills/suumo-property-mapper"
       ]
     }
   ]
