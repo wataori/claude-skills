@@ -1,0 +1,19 @@
+{
+  "name": "wataori-claude-skills",
+  "metadata": {
+    "description": "wataori's personal Claude Code skills",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "my-skills",
+      "description": "Personal productivity skills: Google Meet downloader and Notion reader",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/google-meet-downloader",
+        "./skills/notion-reader"
+      ]
+    }
+  ]
+}

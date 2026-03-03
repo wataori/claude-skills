@@ -1,0 +1,11 @@
+# Notion profiles (contains Integration Tokens - never commit)
+.notion-profiles.json
+~/.notion-profiles.json
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# macOS
+.DS_Store
