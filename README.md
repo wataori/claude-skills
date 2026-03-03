@@ -42,7 +42,7 @@ Notion のページをMarkdownで取得、データベースをCSV/JSONで取得
 
 **セットアップ:**
 ```bash
-python3 ~/.claude/plugins/cache/*/skills/notion-reader/scripts/notion_reader.py setup
+python3 ~/.claude/plugins/cache/wataori-claude-skills/my-skills/*/skills/notion-reader/scripts/notion_reader.py setup
 ```
 
 プロファイル名（例: `work-a`、`work-b`）と Integration Token を登録する。
