@@ -1,5 +1,9 @@
 {
   "name": "wataori-claude-skills",
+  "owner": {
+    "name": "wataori",
+    "email": "wataori@users.noreply.github.com"
+  },
   "metadata": {
     "description": "wataori's personal Claude Code skills",
     "version": "1.0.0"
