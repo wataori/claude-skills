@@ -231,7 +231,8 @@ def blocks_to_markdown(blocks: list[dict], token: str, indent: int = 0) -> str:
         elif btype == "quote":
             lines.append(f"{prefix}> {text}")
         elif btype == "callout":
-            emoji = bdata.get("icon", {}).get("emoji", "")
+            icon = bdata.get("icon") or {}
+            emoji = icon.get("emoji", "")
             lines.append(f"{prefix}> {emoji} {text}")
         elif btype == "code":
             lang = bdata.get("language", "")

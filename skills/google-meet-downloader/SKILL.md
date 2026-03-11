@@ -104,7 +104,7 @@ Meet のファイルは以下のパターンで識別する：
 |---|---|---|
 | 録画 | `video/mp4` | `Meet` を含む、または `Meet Recordings` フォルダ内 |
 | 文字起こし | `application/vnd.google-apps.document` | `文字起こし` または `Transcript` を含む |
-| Geminiメモ | `application/vnd.google-apps.document` | `会議メモ` または `Meeting notes` を含む |
+| Geminiメモ | `application/vnd.google-apps.document` | `会議メモ`、`Meeting notes`、`Gemini によるメモ`、`Gemini memo` を含む |
 
 ## エラーハンドリング
 

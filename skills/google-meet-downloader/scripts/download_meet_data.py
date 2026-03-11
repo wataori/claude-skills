@@ -34,7 +34,7 @@ FILE_PATTERNS = {
     },
     "notes": {
         "mime": ["application/vnd.google-apps.document"],
-        "name_keywords": ["会議メモ", "meeting notes", "ミーティング メモ", "gemini notes"],
+        "name_keywords": ["会議メモ", "meeting notes", "ミーティング メモ", "gemini notes", "gemini によるメモ", "gemini memo"],
     },
 }
 
@@ -176,7 +176,7 @@ def get_or_create_meeting_dir(output_dir: Path, file: dict) -> Path:
     # 会議名を推測（録画・文字起こし・メモで共通の名前部分を抽出）
     name = file.get("name", "")
     # 既知のサフィックスを除いて会議名を取得
-    for suffix in ["の文字起こし", " Transcript", "文字起こし", "会議メモ", "Meeting notes", "ミーティング メモ"]:
+    for suffix in ["の文字起こし", " Transcript", "文字起こし", "会議メモ", "Meeting notes", "ミーティング メモ", "Gemini によるメモ", "Gemini memo"]:
         if suffix.lower() in name.lower():
             idx = name.lower().index(suffix.lower())
             name = name[:idx].strip()
@@ -191,24 +191,40 @@ def get_or_create_meeting_dir(output_dir: Path, file: dict) -> Path:
 
 
 def download_binary(token: str, file_id: str, output_path: Path) -> None:
-    """バイナリファイル（録画）をダウンロードする"""
+    """バイナリファイル（録画）をダウンロードする。alt=media で 403 の場合は webContentLink でリトライする"""
     headers = {"Authorization": f"Bearer {token}"}
     url = f"https://www.googleapis.com/drive/v3/files/{file_id}?alt=media"
 
-    with requests.get(url, headers=headers, stream=True) as resp:
-        resp.raise_for_status()
-        total = int(resp.headers.get("content-length", 0))
-        downloaded = 0
+    resp = requests.get(url, headers=headers, stream=True)
 
-        with open(output_path, "wb") as f:
-            for chunk in resp.iter_content(chunk_size=1024 * 1024):  # 1MB chunks
-                f.write(chunk)
-                downloaded += len(chunk)
-                if total:
-                    pct = downloaded / total * 100
-                    bar = "█" * int(pct / 5) + "░" * (20 - int(pct / 5))
-                    print(f"\r    [{bar}] {pct:.1f}% ({downloaded // 1024 // 1024}MB / {total // 1024 // 1024}MB)", end="", flush=True)
-        print()
+    if resp.status_code == 403:
+        # alt=media が拒否された場合、webContentLink を取得して再試行
+        resp.close()
+        meta_url = f"https://www.googleapis.com/drive/v3/files/{file_id}?fields=webContentLink"
+        meta_resp = requests.get(meta_url, headers=headers)
+        meta_resp.raise_for_status()
+        web_link = meta_resp.json().get("webContentLink")
+        if web_link:
+            print("    (alt=media で 403 のため webContentLink で再試行)")
+            resp = requests.get(web_link, headers=headers, stream=True)
+            resp.raise_for_status()
+        else:
+            raise PermissionError(f"403 Forbidden: ファイルのダウンロード権限がありません (file_id={file_id})")
+
+    resp.raise_for_status()
+
+    total = int(resp.headers.get("content-length", 0))
+    downloaded = 0
+
+    with open(output_path, "wb") as f:
+        for chunk in resp.iter_content(chunk_size=1024 * 1024):  # 1MB chunks
+            f.write(chunk)
+            downloaded += len(chunk)
+            if total:
+                pct = downloaded / total * 100
+                bar = "█" * int(pct / 5) + "░" * (20 - int(pct / 5))
+                print(f"\r    [{bar}] {pct:.1f}% ({downloaded // 1024 // 1024}MB / {total // 1024 // 1024}MB)", end="", flush=True)
+    print()
 
 
 def export_doc_as_markdown(token: str, file_id: str, output_path: Path) -> None:
